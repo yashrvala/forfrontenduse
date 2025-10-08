@@ -65,7 +65,7 @@ if st.button("Get Estimate"):
     # Call Flask API
     for i in range(10):
         try:
-            response = requests.post("http://127.0.0.1:5000/estimate", json=payload, timeout=5)
+            response = requests.post("https://appcost-backendd.onrender.com/", json=payload, timeout=5)
             data = response.json()
             st.markdown(data.get("estimate"))
             st.info(data.get("explanation"))
