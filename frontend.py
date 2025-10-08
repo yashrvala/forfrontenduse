@@ -63,15 +63,21 @@ if st.button("Get Estimate"):
     }
 
     # Call Flask API
-    for i in range(10):
-        try:
-            response = requests.post("https://appcost-backendd.onrender.com/", json=payload, timeout=5)
-            data = response.json()
-            st.markdown(data.get("estimate"))
-            st.info(data.get("explanation"))
-            break
-        except Exception as e:
-            st.warning(f"Waiting for backend... ({i+1}/10)")
-            time.sleep(1)
-    else:
-        st.error("Backend not responding. Please try again later.")
+    backend_url = "https://appcost-backendd.onrender.com/estimate"  
+
+for i in range(10):
+    try:
+        response = requests.post(backend_url, json=payload, timeout=10)  
+        response.raise_for_status()  
+        data = response.json()
+        st.markdown(data.get("estimate", "No estimate returned."))
+        st.info(data.get("explanation", ""))
+        break
+    except requests.exceptions.RequestException as e:
+        st.warning(f"Waiting for backend... ({i+1}/10) | Error: {e}")
+        time.sleep(2)
+    except ValueError:
+        st.warning(f"Invalid response from backend. Retrying... ({i+1}/10)")
+        time.sleep(2)
+else:
+    st.error("Backend not responding. Please try again later.")
